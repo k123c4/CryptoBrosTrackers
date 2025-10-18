@@ -11,12 +11,13 @@ import retrofit2.http.Query;
 
 public interface CoinGeckoAPI {
 
+    // Pass the API key in the header param
     Call<List<CoinMarket>> getMarkets(
-            String vsCurrency,
-            String order,
-            int perPage,
-            int page,
-            boolean sparkline,
-            String apiKey
+            @Query("vs_currency") String vsCurrency,
+            @Query("order") String order,
+            @Query("per_page") int perPage,
+            @Query("page") int page,
+            @Query("sparkline") boolean sparkline,
+            @Header("x-cg-api-key") String apiKey
     );
 }
