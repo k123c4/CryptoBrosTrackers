@@ -10,18 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.cryptobrostrackers.databinding.FragmentNotificationsBinding;
+import com.example.cryptobrostrackers.databinding.FragmentWatchlistBinding;
 
 public class WatchlistFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+    private FragmentWatchlistBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         WatchlistViewModel watchlistViewModel =
                 new ViewModelProvider(this).get(WatchlistViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        binding = FragmentWatchlistBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textNotifications;
