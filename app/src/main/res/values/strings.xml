@@ -4,4 +4,12 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_watchlist">Watchlist</string>
     <string name="title_notifications">Notifications</string>
+
+    <string name="coinImage">Coin Image</string>
+    <string name="bitcoin">Bitcoin</string>
+    <string name="btc">BTC</string>
+    <string name="price">$67,999</string>
+    <string name="change">+3.67%</string>
+
+
 </resources>
