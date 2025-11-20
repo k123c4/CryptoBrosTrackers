@@ -11,5 +11,7 @@
     <string name="price">$67,999</string>
     <string name="change">+3.67%</string>
 
+    <string name="statusSummon">Summoning backend...</string>
+
 
 </resources>

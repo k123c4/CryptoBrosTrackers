@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -14,9 +14,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CryptoBrosTrackers">
         <activity
+            android:name=".ui.home.WakeupActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.Watchlist.Watchlist"
             android:exported="false" />
-
         <activity
             android:name=".ui.home.Home"
             android:exported="true">
@@ -26,12 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.dashboard.Dashboard"
             android:exported="false" />
-
-
     </application>
 
 </manifest>
