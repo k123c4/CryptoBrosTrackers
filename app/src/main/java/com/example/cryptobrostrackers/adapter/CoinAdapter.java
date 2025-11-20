@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.cryptobrostrackers.R;
 import com.example.cryptobrostrackers.model.CoinMarket;
 import com.example.cryptobrostrackers.ui.dashboard.Dashboard;
@@ -62,7 +63,10 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.CoinViewHolder
 
         holder.txtChange.setTextColor(color);
 
-        // Load image with Glide/Picasso later
+        // Load image with Glide
+        Glide.with(context)
+                .load(coin.getImageUrl())
+                .into(holder.imgCoin);
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, Dashboard.class);

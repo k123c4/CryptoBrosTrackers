@@ -1,6 +1,7 @@
 package com.example.cryptobrostrackers.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -61,6 +62,16 @@ public class Home extends AppCompatActivity {
             public void onResponse(Call<List<CoinMarket>> call, Response<List<CoinMarket>> response) {
                 if(response.isSuccessful() && response.body() != null) {
                     adapter.updateData(response.body());
+                    List<CoinMarket> coins = response.body();
+
+                    for (int i = 0; i < coins.size(); i++) {
+                        CoinMarket coin = coins.get(i);
+                        Log.d("Home", "Coin: " + coin.getName()
+                                + " | Symbol: " + coin.getSymbol()
+                                + " | PNG URL: " + coin.getImageUrl());
+                    }
+
+                    adapter.updateData(coins);
                 } else {
                     Toast.makeText(Home.this, "API returned empty response", Toast.LENGTH_SHORT).show();
                 }
