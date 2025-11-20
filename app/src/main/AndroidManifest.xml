@@ -15,18 +15,21 @@
         android:theme="@style/Theme.CryptoBrosTrackers">
         <activity
             android:name=".ui.home.WakeupActivity"
-            android:exported="false" />
+            android:exported="true" >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
+
         <activity
             android:name=".ui.Watchlist.Watchlist"
             android:exported="false" />
         <activity
             android:name=".ui.home.Home"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.dashboard.Dashboard"

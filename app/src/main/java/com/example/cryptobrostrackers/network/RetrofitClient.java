@@ -9,6 +9,7 @@ public class RetrofitClient {
 
     private static Retrofit retrofit;
 
+
     public static Retrofit getClient(){
         if(retrofit == null){
 
