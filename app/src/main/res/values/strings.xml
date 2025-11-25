@@ -12,6 +12,7 @@
     <string name="change">+3.67%</string>
 
     <string name="statusSummon">Summoning backend...</string>
+    <string name="delete">delete</string>
 
 
 </resources>
