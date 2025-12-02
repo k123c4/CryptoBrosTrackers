@@ -1,6 +1,9 @@
 package com.example.cryptobrostrackers.ui.Watchlist;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cryptobrostrackers.R;
 import com.example.cryptobrostrackers.adapter.CoinAdapter;
+import com.example.cryptobrostrackers.ui.home.Home;
 
 import java.util.ArrayList;
 
@@ -32,6 +36,14 @@ public class Watchlist extends AppCompatActivity {
         adapter = new CoinAdapter(this, new ArrayList<>());
         wlCoins.setAdapter(adapter);
 
+        ImageButton WatchlistButton = findViewById(R.id.HomeBt);
+        WatchlistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Watchlist.this, Home.class);
+                startActivity(intent);
+            }
+        });
 
 
 

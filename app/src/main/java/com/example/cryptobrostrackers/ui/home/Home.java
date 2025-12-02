@@ -1,7 +1,10 @@
 package com.example.cryptobrostrackers.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -17,6 +20,7 @@ import com.example.cryptobrostrackers.adapter.CoinAdapter;
 import com.example.cryptobrostrackers.model.CoinMarket;
 import com.example.cryptobrostrackers.network.CoinGeckoAPI;
 import com.example.cryptobrostrackers.network.RetrofitClient;
+import com.example.cryptobrostrackers.ui.Watchlist.Watchlist;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +53,14 @@ public class Home extends AppCompatActivity {
         });
 
         loadCoinsFromApi();
+        ImageButton WatchlistButton = findViewById(R.id.ViewWlBt);
+        WatchlistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Home.this, Watchlist.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void loadCoinsFromApi() {
