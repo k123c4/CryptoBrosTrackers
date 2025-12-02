@@ -13,6 +13,7 @@
 
     <string name="statusSummon">Summoning backend...</string>
     <string name="delete">delete</string>
+    <string name="add_to_watchlist">Add to watchlist</string>
 
 
 </resources>

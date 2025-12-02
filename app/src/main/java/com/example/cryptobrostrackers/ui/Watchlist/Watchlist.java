@@ -31,7 +31,7 @@ public class Watchlist extends AppCompatActivity {
 
         adapter = new CoinAdapter(this, new ArrayList<>());
         wlCoins.setAdapter(adapter);
-    // need to use the same coin adapter to implement watchlist_coin_item
+
 
 
 
