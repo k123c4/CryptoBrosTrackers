@@ -14,6 +14,7 @@
     <string name="statusSummon">Summoning backend...</string>
     <string name="delete">delete</string>
     <string name="add_to_watchlist">Add to watchlist</string>
+    <string name="view_watchlist">View Watchlist</string>
 
 
 </resources>

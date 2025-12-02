@@ -19,5 +19,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <ImageButton
+        android:id="@+id/ViewWlBt"
+        android:layout_width="80dp"
+        android:layout_height="85dp"
+        android:layout_margin="10dp"
+        android:layout_gravity="bottom|end"
+        android:background="@drawable/watchlist_bt_background"
+        android:contentDescription="@string/view_watchlist"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/eye_watchlist" />
+
 
 </FrameLayout>
