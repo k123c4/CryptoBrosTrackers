@@ -52,6 +52,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    // Chart for dashboard
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     // images
     implementation ("com.github.bumptech.glide:glide:4.16.0")
