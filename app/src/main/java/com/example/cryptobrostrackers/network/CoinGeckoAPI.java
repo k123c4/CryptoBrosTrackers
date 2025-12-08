@@ -7,8 +7,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
-
+import com.example.cryptobrostrackers.model.TickerChart;
 public interface CoinGeckoAPI {
     @GET("markets")
     Call<List<CoinMarket>> getMarkets(
@@ -17,5 +18,12 @@ public interface CoinGeckoAPI {
             @Query("per_page") int perPage,
             @Query("page") int page,
             @Query("sparkline") boolean sparkline
+    );
+
+    @GET("https://api.coingecko.com/api/v3/coins/{id}/market_chart")
+    Call<TickerChart> getMarketChart(
+            @Path("id") String id,
+            @Query("vs_currency") String vsCurrency,
+            @Query("days") String days
     );
 }
