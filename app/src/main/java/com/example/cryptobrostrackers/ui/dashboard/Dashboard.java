@@ -47,14 +47,18 @@ public class Dashboard extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // back to home
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Dashboard");
+        }
+
+        // add to watchlist
 //        ImageButton WatchlistButton = findViewById(R.id.addWlBt);
-//        WatchlistButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(Dashboard.this, Home.class);
-//                Toast.makeText(Dashboard.this, "Added to Watchlist", Toast.LENGTH_SHORT).show();
-//                startActivity(intent);
-//            }
+//        WatchlistButton.setOnClickListener(v -> {
+//            Intent intent = new Intent(Dashboard.this, Home.class);
+//            Toast.makeText(Dashboard.this, "Added to Watchlist", Toast.LENGTH_SHORT).show();
+//            startActivity(intent);
 //        });
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_dashboard);
@@ -192,6 +196,10 @@ public class Dashboard extends AppCompatActivity {
         lineChart.getDescription().setEnabled(false);
         lineChart.invalidate();
     }
-
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish(); //action button support
+        return true;
+    }
 
 }

@@ -36,14 +36,11 @@ public class Watchlist extends AppCompatActivity {
         adapter = new CoinAdapter(this, new ArrayList<>());
         wlCoins.setAdapter(adapter);
 
-        ImageButton WatchlistButton = findViewById(R.id.HomeBt);
-        WatchlistButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Watchlist.this, Home.class);
-                startActivity(intent);
-            }
-        });
+        // back to home
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Watchlist");
+        }
 
 
 
@@ -53,4 +50,10 @@ public class Watchlist extends AppCompatActivity {
             return insets;
         });
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish(); //action button support
+        return true;
+    }
+
 }
