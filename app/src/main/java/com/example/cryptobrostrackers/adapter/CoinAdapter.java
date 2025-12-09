@@ -24,11 +24,14 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.CoinViewHolder
 
     private Context context;
     private List<CoinMarket> coins = new ArrayList<>();
+    private List<CoinMarket> coinsFull;
+
 
     public CoinAdapter(Context context, List<CoinMarket> coins) {
         this.context = context;
         if(coins != null) {
             this.coins.addAll(coins);
+            this.coinsFull = new ArrayList<>(coins); //backup
         }
     }
 
@@ -36,8 +39,26 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.CoinViewHolder
         coins.clear();
         if(newCoins != null) {
             coins.addAll(newCoins);
+            this.coinsFull = new ArrayList<>(newCoins); //backup
         }
         notifyDataSetChanged();
+    }
+
+    public void filter(String text) {
+        coins.clear();
+        if (text.isEmpty()) {
+            coins.addAll(coinsFull); // show everything if there is no text.
+        } else {
+            text = text.toLowerCase();
+            for (CoinMarket item : coinsFull) {
+                // check for symbol or name
+                if (item.getName().toLowerCase().contains(text) ||
+                        item.getSymbol().toLowerCase().contains(text)) {
+                    coins.add(item);
+                }
+            }
+        }
+        notifyDataSetChanged(); // update the UI
     }
 
     @NonNull

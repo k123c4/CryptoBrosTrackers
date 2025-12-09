@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -33,6 +34,7 @@ public class Home extends AppCompatActivity {
 
     private RecyclerView rvCoins;
     private CoinAdapter adapter;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class Home extends AppCompatActivity {
 
         rvCoins = findViewById(R.id.rvCoins);
         rvCoins.setLayoutManager(new LinearLayoutManager(this));
+        searchView = findViewById(R.id.searchView);
 
         adapter = new CoinAdapter(this, new ArrayList<>());
         rvCoins.setAdapter(adapter);
@@ -59,6 +62,22 @@ public class Home extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(Home.this, Watchlist.class);
                 startActivity(intent);
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // call the filter method in Adapter
+                if (adapter != null) {
+                    adapter.filter(newText);
+                }
+                return true;
             }
         });
     }
