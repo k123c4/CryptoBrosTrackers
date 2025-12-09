@@ -5,7 +5,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -62,24 +64,69 @@ public class Dashboard extends AppCompatActivity {
         // Retrieve the Coin ID passed from the Home screen adapter
         if (getIntent().hasExtra("coin_id")) {
             coinId = getIntent().getStringExtra("coin_id");
-            fetchChartData(coinId);
+            String name = getIntent().getStringExtra("coin_name");
+            String symbol = getIntent().getStringExtra("coin_symbol");
+            double price = getIntent().getDoubleExtra("coin_price", 0);
+            double change = getIntent().getDoubleExtra("coin_change", 0);
+            long cap = getIntent().getLongExtra("coin_cap", 0);
+
+            //defaults to 7 days
+            fetchChartData(coinId, "7");
+            //update UI text
+            updateUI(name, symbol, price, change, cap);
         } else {
             Toast.makeText(this, "No Coin ID found", Toast.LENGTH_SHORT).show();
         }
+
+        //time buttons for chart
+        Button btn1D = findViewById(R.id.btn1D);
+        Button btn7D = findViewById(R.id.btn7D);
+        Button btn30D = findViewById(R.id.btn30D);
+
+        if (btn1D != null) btn1D.setOnClickListener(v -> fetchChartData(coinId, "1"));
+        if (btn7D != null) btn7D.setOnClickListener(v -> fetchChartData(coinId, "7"));
+        if (btn30D != null) btn30D.setOnClickListener(v -> fetchChartData(coinId, "30"));
+
         //VIEW COMPAT
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars    .top, systemBars.right, systemBars.bottom);
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
     }
 
-    private void fetchChartData(String id) {
+    private void updateUI(String name, String symbol, double price, double change, long cap) {
+        TextView tvName = findViewById(R.id.tvDetailName);
+        TextView tvPrice = findViewById(R.id.tvDetailPrice);
+        TextView tvChange = findViewById(R.id.tvDetailChange);
+        TextView tvCap = findViewById(R.id.tvMarketCap);
+
+        // check in case views aren't in XML yet
+        if (tvName == null || tvPrice == null) return;
+
+        if (name != null) {
+            tvName.setText(name + " (" + (symbol != null ? symbol.toUpperCase() : "") + ")");
+        }
+
+        tvPrice.setText("$" + price);
+
+
+        tvChange.setText(String.format("%.2f%%", change));
+        if (change >= 0) {
+            tvChange.setTextColor(Color.GREEN);
+        } else {
+            tvChange.setTextColor(Color.RED);
+        }
+
+        tvCap.setText("Market Cap: $" + cap);
+    }
+
+    private void fetchChartData(String id, String days) {
         // Use the existing RetrofitClient
         CoinGeckoAPI api = RetrofitClient.getClient().create(CoinGeckoAPI.class);
 
-        // Fetch 14 days of history
-        Call<TickerChart> call = api.getMarketChart(id, "usd", "14");
+        // Fetch days of history
+        Call<TickerChart> call = api.getMarketChart(id, "usd", days);
 
         call.enqueue(new Callback<TickerChart>() {
             @Override
@@ -88,8 +135,14 @@ public class Dashboard extends AppCompatActivity {
                     List<List<Double>> prices = response.body().getPrices();
                     setupChart(prices);
                 } else {
-                    Log.e("Dashboard", "Error Code: " + response.code());
-                    Toast.makeText(Dashboard.this, "Failed to load chart", Toast.LENGTH_SHORT).show();
+                    //warns you of rate limit instead of just saying failed to load
+                    if (response.code() == 429) {
+                        Log.e("Dashboard", "Rate Limit Hit (429)");
+                        Toast.makeText(Dashboard.this, "Too fast! Please wait a moment.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.e("Dashboard", "Error Code: " + response.code());
+                        Toast.makeText(Dashboard.this, "Failed to load chart", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 

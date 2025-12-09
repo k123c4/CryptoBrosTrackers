@@ -16,6 +16,13 @@
     <string name="add_to_watchlist">Add to watchlist</string>
     <string name="view_watchlist">View Watchlist</string>
     <string name="home">Home</string>
+    <string name="_1d">1D</string>
+    <string name="_7d">7D</string>
+    <string name="_30d">30D</string>
+    <string name="bitcoin_btc">Bitcoin (BTC)</string>
+    <string name="_50_000_00">$50,000.00</string>
+    <string name="_5_2">+5.2%</string>
+    <string name="market_cap_1_2b">Market Cap: $1.2B</string>
 
 
 </resources>

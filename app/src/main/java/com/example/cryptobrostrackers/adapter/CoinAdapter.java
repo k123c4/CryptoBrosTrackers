@@ -71,6 +71,11 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.CoinViewHolder
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, Dashboard.class);
             intent.putExtra("coin_id", coin.getId());
+            intent.putExtra("coin_name", coin.getName());
+            intent.putExtra("coin_symbol", coin.getSymbol());
+            intent.putExtra("coin_price", coin.getCurrentPrice());
+            intent.putExtra("coin_change", coin.getPriceChangePct24h());
+            intent.putExtra("coin_cap", coin.getMarketCap());
             context.startActivity(intent);
         });
     }
