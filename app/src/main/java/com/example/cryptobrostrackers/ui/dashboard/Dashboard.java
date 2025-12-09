@@ -157,11 +157,15 @@ public class Dashboard extends AppCompatActivity {
         if (priceList == null || priceList.isEmpty()) return;
 
         List<Entry> entries = new ArrayList<>();
+
+        long firstTimestamp = priceList.get(0).get(0).longValue();  // normalize
+
         for (List<Double> pair : priceList) {
-            // pair[0] = timestamp, pair[1] = price
-            float timestamp = pair.get(0).floatValue();
+            long time = pair.get(0).longValue();
+            float normalizedX = (time - firstTimestamp) / 1000f; // seconds for precision
             float price = pair.get(1).floatValue();
-            entries.add(new Entry(timestamp, price));
+
+            entries.add(new Entry(normalizedX, price));
         }
 
         LineDataSet dataSet = new LineDataSet(entries, "Price (USD)");
@@ -170,22 +174,24 @@ public class Dashboard extends AppCompatActivity {
         dataSet.setLineWidth(2f);
         dataSet.setDrawValues(false);
 
-        LineData lineData = new LineData(dataSet);
-        lineChart.setData(lineData);
+        lineChart.setData(new LineData(dataSet));
 
-        // Format X Axis to show dates
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
         xAxis.setValueFormatter(new ValueFormatter() {
             private final SimpleDateFormat mFormat = new SimpleDateFormat("MM/dd", Locale.ENGLISH);
+
             @Override
             public String getFormattedValue(float value) {
-                return mFormat.format(new Date((long) value));
+                long millis = firstTimestamp + ((long) value * 1000L);
+                return mFormat.format(new Date(millis));
             }
         });
 
         lineChart.getDescription().setEnabled(false);
         lineChart.invalidate();
     }
+
 
 }
