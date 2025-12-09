@@ -39,14 +39,24 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.example.cryptobrostrackers.database.CoinsRepository;
+
+
 public class Dashboard extends AppCompatActivity {
 
     private LineChart lineChart;
     private String coinId;
 
+    private String coinSymbol;  // store current coin's symbol
+    private com.example.cryptobrostrackers.database.CoinsRepository coinsRepository;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        coinsRepository = new CoinsRepository(getApplication());
+
         // back to home
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -54,12 +64,29 @@ public class Dashboard extends AppCompatActivity {
         }
 
         // add to watchlist
-//        ImageButton WatchlistButton = findViewById(R.id.addWlBt);
-//        WatchlistButton.setOnClickListener(v -> {
-//            Intent intent = new Intent(Dashboard.this, Home.class);
-//            Toast.makeText(Dashboard.this, "Added to Watchlist", Toast.LENGTH_SHORT).show();
-//            startActivity(intent);
-//        });
+        // add to watchlist
+ImageButton watchlistButton = findViewById(R.id.addWlBt);
+watchlistButton.setOnClickListener(v -> {
+    if (coinSymbol == null || coinSymbol.isEmpty()) {
+        Toast.makeText(Dashboard.this, "No symbol to add", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    coinsRepository.addCoinIfNotExists(coinSymbol, result -> {
+        // callback happens on background thread, so bounce to UI
+        runOnUiThread(() -> {
+            if (result == CoinsRepository.AddResult.ADDED) {
+                Toast.makeText(Dashboard.this,
+                        "Added " + coinSymbol.toUpperCase() + " to watchlist",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(Dashboard.this,
+                        coinSymbol.toUpperCase() + " is already in your watchlist",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    });
+});
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_dashboard);
 
@@ -73,6 +100,8 @@ public class Dashboard extends AppCompatActivity {
             double price = getIntent().getDoubleExtra("coin_price", 0);
             double change = getIntent().getDoubleExtra("coin_change", 0);
             long cap = getIntent().getLongExtra("coin_cap", 0);
+
+            coinSymbol = symbol;
 
             //defaults to 7 days
             fetchChartData(coinId, "7");

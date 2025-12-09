@@ -14,14 +14,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cryptobrostrackers.R;
-import com.example.cryptobrostrackers.adapter.CoinAdapter;
-import com.example.cryptobrostrackers.ui.home.Home;
+import com.example.cryptobrostrackers.database.Coin;
+import com.example.cryptobrostrackers.database.CoinsRepository;
 
 import java.util.ArrayList;
 
 public class Watchlist extends AppCompatActivity {
     private RecyclerView wlCoins;
-    private CoinAdapter adapter;
+    private WatchlistAdapter adapter;
+    private CoinsRepository repository;
 
 
     @Override
@@ -30,18 +31,28 @@ public class Watchlist extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_watchlist);
 
-        wlCoins = findViewById(R.id.wlCoins);
-        wlCoins.setLayoutManager(new LinearLayoutManager(this));
-
-        adapter = new CoinAdapter(this, new ArrayList<>());
-        wlCoins.setAdapter(adapter);
-
         // back to home
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("Watchlist");
         }
+        wlCoins = findViewById(R.id.wlCoins);
+        wlCoins.setLayoutManager(new LinearLayoutManager(this));
 
+        repository = new CoinsRepository(getApplication());
+
+        adapter = new WatchlistAdapter(new WatchlistAdapter.OnDeleteClickListener() {
+            @Override
+            public void onDeleteClick(Coin coin) {
+                repository.delete(coin);
+            }
+        });
+        wlCoins.setAdapter(adapter);
+
+        // Observe the Room LiveData and update the list
+        repository.getAllCoins().observe(this, coins -> {
+            adapter.submitList(coins);
+        });
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

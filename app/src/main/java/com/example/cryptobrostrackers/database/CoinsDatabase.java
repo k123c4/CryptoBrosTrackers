@@ -18,13 +18,13 @@ public abstract class CoinsDatabase extends RoomDatabase {
 
     public abstract CoinsDao coinsDao();
     private static volatile CoinsDatabase INSTANCE;
+//    private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+//        @Override
+//        public void migrate(@NonNull SupportSQLiteDatabase db) {
+//            // Example:
+//        }
+//    };
 
-    private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
-        @Override
-        public void migrate(@NonNull SupportSQLiteDatabase db) {
-            // Example:
-        }
-    };
 
     public static CoinsDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
@@ -35,7 +35,6 @@ public abstract class CoinsDatabase extends RoomDatabase {
                                     CoinsDatabase.class,
                                     "coins_db"        // database file
                             )
-                            // .addMigrations(MIGRATION_1_2)
                             .build();
                 }
             }

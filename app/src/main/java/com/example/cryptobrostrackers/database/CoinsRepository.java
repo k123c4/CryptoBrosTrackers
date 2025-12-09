@@ -25,28 +25,27 @@ public class CoinsRepository {
     }
 
     // For RecyclerView
+//    public LiveData<List<Coin>> getAllCoins() {
+//        return allCoins;
+//    }
     public LiveData<List<Coin>> getAllCoins() {
         return allCoins;
     }
 
     // Attempts to add a new coin (ticker symbol only).
-    // Runs in background and reports result via callback (like your FandomRepository).
-    public void tryAddCoin(String symbol, Consumer<AddResult> callback) {
+    // Runs in background and reports result via callback.
+    public void addCoinIfNotExists(String symbol, Consumer<AddResult> callback) {
         executor.execute(() -> {
-            // Normalize symbol if you want consistency
-            String normSymbol = symbol.toUpperCase();
-
-            int count = dao.exists(normSymbol);
+            int count = dao.exists(symbol);
             if (count > 0) {
-                callback.accept(AddResult.ALREADY_IN_LIST);
-                return;
-            }
-
-            long id = dao.insert(new Coin(normSymbol));
-            if (id == -1) {
-                callback.accept(AddResult.ALREADY_IN_LIST);
+                if (callback != null) {
+                    callback.accept(AddResult.ALREADY_IN_LIST);
+                }
             } else {
-                callback.accept(AddResult.ADDED);
+                dao.insert(new Coin(symbol));
+                if (callback != null) {
+                    callback.accept(AddResult.ADDED);
+                }
             }
         });
     }
