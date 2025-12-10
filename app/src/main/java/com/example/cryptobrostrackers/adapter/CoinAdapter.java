@@ -97,6 +97,7 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.CoinViewHolder
             intent.putExtra("coin_price", coin.getCurrentPrice());
             intent.putExtra("coin_change", coin.getPriceChangePct24h());
             intent.putExtra("coin_cap", coin.getMarketCap());
+            intent.putExtra("coin_image", coin.getImageUrl());
             context.startActivity(intent);
         });
     }
