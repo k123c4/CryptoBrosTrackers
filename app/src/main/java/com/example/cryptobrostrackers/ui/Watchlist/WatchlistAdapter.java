@@ -1,5 +1,6 @@
 package com.example.cryptobrostrackers.ui.Watchlist;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.cryptobrostrackers.R;
-import com.example.cryptobrostrackers.model.CoinMarket;
+import com.example.cryptobrostrackers.database.Coin;
+import com.example.cryptobrostrackers.ui.dashboard.Dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,17 +24,17 @@ import java.util.Locale;
 public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.ViewHolder> {
 
     public interface OnDeleteClickListener {
-        void onDeleteClick(String symbol);
+        void onDeleteClick(Coin coin);
     }
 
-    private final List<CoinMarket> items = new ArrayList<>();
+    private final List<Coin> items = new ArrayList<>();
     private final OnDeleteClickListener deleteClickListener;
 
     public WatchlistAdapter(OnDeleteClickListener deleteClickListener) {
         this.deleteClickListener = deleteClickListener;
     }
 
-    public void submitList(List<CoinMarket> newItems) {
+    public void submitList(List<Coin> newItems) {
         items.clear();
         if (newItems != null) {
             items.addAll(newItems);
@@ -50,46 +52,49 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        CoinMarket coin = items.get(position);
+        Coin coin = items.get(position);
 
-        String symbol = coin.getSymbol() != null
-                ? coin.getSymbol().toUpperCase(Locale.ENGLISH)
+        String symbol = coin.symbol != null
+                ? coin.symbol.toUpperCase(Locale.ENGLISH)
                 : "";
 
-        holder.txtName.setText(coin.getName());
+        holder.txtName.setText(coin.name);
         holder.txtSymbol.setText(symbol);
-        holder.txtPrice.setText(String.format(Locale.ENGLISH, "$%.2f", coin.getCurrentPrice()));
-        holder.txtChange.setText(String.format(Locale.ENGLISH, "%.2f%%", coin.getPriceChangePct24h()));
+        holder.txtPrice.setText(String.format(Locale.ENGLISH, "$%.2f", coin.price));
+        holder.txtChange.setText(String.format(Locale.ENGLISH, "%.2f%%", coin.change24h));
 
-        int color = (coin.getPriceChangePct24h() >= 0)
+        int color = (coin.change24h >= 0)
                 ? ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_green_light)
                 : ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_red_light);
         holder.txtChange.setTextColor(color);
 
-        // Glide image
-        Glide.with(holder.itemView.getContext())
-                .load(coin.getImageUrl())
-                .into(holder.imgCoin);
+        // Load image if we have one
+        if (coin.imageUrl != null && !coin.imageUrl.isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(coin.imageUrl)
+                    .into(holder.imgCoin);
+        } else {
+            holder.imgCoin.setImageResource(R.drawable.ic_launcher_foreground); // or any placeholder
+        }
 
+        // Delete button
         holder.deleteBt.setOnClickListener(v -> {
-            if (deleteClickListener != null && coin.getSymbol() != null) {
-                deleteClickListener.onDeleteClick(coin.getSymbol());
+            if (deleteClickListener != null) {
+                deleteClickListener.onDeleteClick(coin);
             }
         });
+
+        // Open Dashboard on row click (using snapshot values)
         holder.itemView.setOnClickListener(v -> {
-            android.content.Context context = v.getContext();
-            android.content.Intent intent =
-                    new android.content.Intent(context, com.example.cryptobrostrackers.ui.dashboard.Dashboard.class);
-
-            intent.putExtra("coin_id", coin.getId());
-            intent.putExtra("coin_name", coin.getName());
-            intent.putExtra("coin_symbol", coin.getSymbol());
-            intent.putExtra("coin_price", coin.getCurrentPrice());
-            intent.putExtra("coin_change", coin.getPriceChangePct24h());
-            intent.putExtra("coin_cap", coin.getMarketCap());
-            intent.putExtra("coin_image", coin.getImageUrl());
-
-            context.startActivity(intent);
+            Intent intent = new Intent(v.getContext(), Dashboard.class);
+            intent.putExtra("coin_id", coin.symbol);  // ID isn't super critical for chart; adjust if needed
+            intent.putExtra("coin_name", coin.name);
+            intent.putExtra("coin_symbol", coin.symbol);
+            intent.putExtra("coin_price", coin.price);
+            intent.putExtra("coin_change", coin.change24h);
+            intent.putExtra("coin_cap", coin.marketCap);
+            intent.putExtra("coin_image", coin.imageUrl);
+            v.getContext().startActivity(intent);
         });
     }
 

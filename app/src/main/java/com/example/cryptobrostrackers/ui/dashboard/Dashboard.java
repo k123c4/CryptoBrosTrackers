@@ -46,9 +46,14 @@ public class Dashboard extends AppCompatActivity {
 
     private LineChart lineChart;
     private String coinId;
-    private String coinSymbol;  // store current coin's symbol
-    private com.example.cryptobrostrackers.database.CoinsRepository coinsRepository;
+    private String coinName;
+    private String coinSymbol;
+    private double coinPrice;
+    private double coinChange;
+    private long coinCap;
+    private String coinImageUrl;
 
+    private com.example.cryptobrostrackers.database.CoinsRepository coinsRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,28 +72,42 @@ public class Dashboard extends AppCompatActivity {
         coinsRepository = new CoinsRepository(getApplication());
 
         // add to watchlist
-ImageButton watchlistButton = findViewById(R.id.addWlBt);
-watchlistButton.setOnClickListener(v -> {
-    if (coinSymbol == null || coinSymbol.isEmpty()) {
-        Toast.makeText(Dashboard.this, "No symbol to add", Toast.LENGTH_SHORT).show();
-        return;
-    }
-
-    coinsRepository.addCoinIfNotExists(coinSymbol, result -> {
-        // callback happens on background thread, so bounce to UI
-        runOnUiThread(() -> {
-            if (result == CoinsRepository.AddResult.ADDED) {
-                Toast.makeText(Dashboard.this,
-                        "Added " + coinSymbol.toUpperCase() + " to watchlist",
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(Dashboard.this,
-                        coinSymbol.toUpperCase() + " is already in your watchlist",
-                        Toast.LENGTH_SHORT).show();
+        ImageButton watchlistButton = findViewById(R.id.addWlBt);
+        watchlistButton.setOnClickListener(v -> {
+            if (coinSymbol == null || coinSymbol.isEmpty()) {
+                Toast.makeText(Dashboard.this, "No coin data to save", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            String nameToSave = (coinName != null && !coinName.isEmpty())
+                    ? coinName
+                    : coinSymbol.toUpperCase();
+
+            coinsRepository.addCoinSnapshotIfNotExists(
+                    coinSymbol,
+                    nameToSave,
+                    coinPrice,
+                    coinChange,
+                    coinCap,
+                    coinImageUrl,
+                    result -> runOnUiThread(() -> {
+                        if (result == CoinsRepository.AddResult.ADDED) {
+                            Toast.makeText(
+                                    Dashboard.this,
+                                    "Added " + coinSymbol.toUpperCase() + " to watchlist",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        } else {
+                            Toast.makeText(
+                                    Dashboard.this,
+                                    coinSymbol.toUpperCase() + " is already in your watchlist",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
+                    })
+            );
         });
-    });
-});
+
 
 
         lineChart = findViewById(R.id.lineChart);
@@ -101,7 +120,13 @@ watchlistButton.setOnClickListener(v -> {
             double price = getIntent().getDoubleExtra("coin_price", 0);
             double change = getIntent().getDoubleExtra("coin_change", 0);
             long cap = getIntent().getLongExtra("coin_cap", 0);
+            coinImageUrl = getIntent().getStringExtra("coin_image");
 
+            //for watchlist
+            coinName= name;
+            coinCap = cap;
+            coinPrice = price;
+            coinChange = change;
             coinSymbol = symbol;
 
             //defaults to 7 days
