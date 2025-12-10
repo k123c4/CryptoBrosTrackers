@@ -29,7 +29,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Watchlist extends AppCompatActivity {
-
+    private static final int MAX_API_RETRIES = 5;
+    private static final long BASE_RETRY_DELAY_MS = 500L;
     private RecyclerView wlCoins;
     private WatchlistAdapter adapter;
     private CoinsRepository repository;
@@ -83,14 +84,28 @@ public class Watchlist extends AppCompatActivity {
     }
 
     private void fetchWatchlistFromApi() {
+        fetchWatchlistFromApi(0);
+    }
+
+    private void fetchWatchlistFromApi(int attempt) {
+        // Stop if too many tries
+        if (attempt > MAX_API_RETRIES) {
+            runOnUiThread(() ->
+                    android.widget.Toast.makeText(
+                            Watchlist.this,
+                            "Could not load watchlist after several attempts.",
+                            android.widget.Toast.LENGTH_LONG
+                    ).show()
+            );
+            return;
+        }
+
         CoinGeckoAPI api = RetrofitClient.getClient().create(CoinGeckoAPI.class);
 
-        // Reuse the same markets call you use on the Home screen
-        // Adjust the params to match your CoinGeckoAPI interface
         Call<List<CoinMarket>> call = api.getMarkets(
                 "usd",
                 "market_cap_desc",
-                10,   // per_page
+                20,   // per_page
                 1,     // page
                 false  // sparkline
         );
@@ -99,8 +114,22 @@ public class Watchlist extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<CoinMarket>> call, Response<List<CoinMarket>> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    Log.e("Watchlist", "Markets API failed: " + response.code());
-                    adapter.submitList(new ArrayList<>());
+                    int code = response.code();
+                    Log.e("Watchlist", "Markets API failed: " + code + " (attempt " + attempt + ")");
+
+                    if (code >= 500 && code < 600) {
+                        // 5xx = server problem → retry with backoff
+                        scheduleRetry(attempt);
+                    } else {
+                        // 4xx or other issues: don't hammer API
+                        runOnUiThread(() ->
+                                android.widget.Toast.makeText(
+                                        Watchlist.this,
+                                        "Error loading watchlist (API " + code + ")",
+                                        android.widget.Toast.LENGTH_SHORT
+                                ).show()
+                        );
+                    }
                     return;
                 }
 
@@ -109,7 +138,7 @@ public class Watchlist extends AppCompatActivity {
 
                 for (CoinMarket m : all) {
                     if (m.getSymbol() == null) continue;
-                    String sym = m.getSymbol().toLowerCase(Locale.ENGLISH);
+                    String sym = m.getSymbol().toLowerCase(java.util.Locale.ENGLISH);
                     if (watchSymbols.contains(sym)) {
                         filtered.add(m);
                     }
@@ -120,11 +149,29 @@ public class Watchlist extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<CoinMarket>> call, Throwable t) {
-                Log.e("Watchlist", "Markets API error", t);
-                adapter.submitList(new ArrayList<>());
+                Log.e("Watchlist", "Markets API error on attempt " + attempt, t);
+                // Network failure – retry with backoff
+                scheduleRetry(attempt);
             }
         });
     }
+
+    private void scheduleRetry(int currentAttempt) {
+        int nextAttempt = currentAttempt + 1;
+
+        // Exponential backoff: 1s, 2s, 4s, 8s... capped at 30s
+        long delay = (long) Math.min(
+                30000,
+                BASE_RETRY_DELAY_MS * Math.pow(2, currentAttempt)
+        );
+
+        Log.d("Watchlist", "Scheduling retry " + nextAttempt + " in " + delay + " ms");
+
+        new android.os.Handler(android.os.Looper.getMainLooper())
+                .postDelayed(() -> fetchWatchlistFromApi(nextAttempt), delay);
+    }
+
+
 
     @Override
     public boolean onSupportNavigateUp() {
