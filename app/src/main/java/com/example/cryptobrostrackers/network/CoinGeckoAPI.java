@@ -20,7 +20,7 @@ public interface CoinGeckoAPI {
             @Query("sparkline") boolean sparkline
     );
 
-    @GET("market_chart/{id}")
+    @GET("https://api.coingecko.com/api/v3/coins/{id}/market_chart")
     Call<TickerChart> getMarketChart(
             @Path("id") String id,
             @Query("vs_currency") String vsCurrency,
