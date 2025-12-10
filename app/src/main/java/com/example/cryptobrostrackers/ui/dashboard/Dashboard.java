@@ -46,7 +46,6 @@ public class Dashboard extends AppCompatActivity {
 
     private LineChart lineChart;
     private String coinId;
-
     private String coinSymbol;  // store current coin's symbol
     private com.example.cryptobrostrackers.database.CoinsRepository coinsRepository;
 
@@ -54,8 +53,10 @@ public class Dashboard extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_dashboard);
 
-        coinsRepository = new CoinsRepository(getApplication());
+
 
         // back to home
         if (getSupportActionBar() != null) {
@@ -63,7 +64,8 @@ public class Dashboard extends AppCompatActivity {
             getSupportActionBar().setTitle("Dashboard");
         }
 
-        // add to watchlist
+        coinsRepository = new CoinsRepository(getApplication());
+
         // add to watchlist
 ImageButton watchlistButton = findViewById(R.id.addWlBt);
 watchlistButton.setOnClickListener(v -> {
@@ -87,8 +89,7 @@ watchlistButton.setOnClickListener(v -> {
         });
     });
 });
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_dashboard);
+
 
         lineChart = findViewById(R.id.lineChart);
 
@@ -115,6 +116,7 @@ watchlistButton.setOnClickListener(v -> {
         Button btn1D = findViewById(R.id.btn1D);
         Button btn7D = findViewById(R.id.btn7D);
         Button btn30D = findViewById(R.id.btn30D);
+
 
         if (btn1D != null) btn1D.setOnClickListener(v -> fetchChartData(coinId, "1"));
         if (btn7D != null) btn7D.setOnClickListener(v -> fetchChartData(coinId, "7"));
