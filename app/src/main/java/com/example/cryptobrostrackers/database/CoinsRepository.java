@@ -24,10 +24,6 @@ public class CoinsRepository {
         allCoins = dao.getAllCoins();
     }
 
-    // For RecyclerView
-//    public LiveData<List<Coin>> getAllCoins() {
-//        return allCoins;
-//    }
     public LiveData<List<Coin>> getAllCoins() {
         return allCoins;
     }
@@ -58,5 +54,7 @@ public class CoinsRepository {
     public void delete(Coin coin) {
         executor.execute(() -> dao.delete(coin));
     }
-
+    public void deleteBySymbol(String symbol) {
+        executor.execute(() -> dao.deleteBySymbol(symbol));
+    }
 }
